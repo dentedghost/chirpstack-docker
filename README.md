@@ -97,3 +97,83 @@ You should be able to access the UI by opening http://localhost:8090 in your bro
 
 **Note:** It is recommended to use the [gRPC](https://www.chirpstack.io/docs/chirpstack/api/grpc.html)
 interface over the [REST](https://www.chirpstack.io/docs/chirpstack/api/rest.html) interface.
+
+## TLS Setup for Basic Station
+
+This branch includes TLS server authentication for secure Basic Station connections.
+
+### Prerequisites
+
+Generate certificates using [chirpstack-certificates](https://github.com/chirpstack/chirpstack-certificates):
+
+```bash
+git clone https://github.com/chirpstack/chirpstack-certificates.git
+cd chirpstack-certificates
+
+# Set your hostname(s) - comma-separated for multiple
+export CHIRPSTACK_GATEWAY_BRIDGE_HOSTS="yourdomain.com,localhost"
+
+# Generate certificates
+make
+```
+
+### Installation Steps
+
+1. **Create the certs directory:**
+   ```bash
+   mkdir -p config/certs
+   ```
+
+2. **Copy certificates from chirpstack-certificates:**
+   ```bash
+   cp /path/to/chirpstack-certificates/certs/ca/ca.pem config/certs/
+   cp /path/to/chirpstack-certificates/certs/chirpstack-gateway-bridge/basicstation/basicstation.pem config/certs/
+   cp /path/to/chirpstack-certificates/certs/chirpstack-gateway-bridge/basicstation/basicstation-key.pem config/certs/
+   ```
+
+3. **Set file permissions:**
+   ```bash
+   chmod 644 config/certs/*.pem
+   ```
+
+4. **Start the services:**
+   ```bash
+   docker compose up -d
+   ```
+
+5. **Verify TLS is working:**
+   ```bash
+   openssl s_client -connect localhost:13008 -CAfile config/certs/ca.pem </dev/null
+   ```
+
+### Gateway Configuration
+
+Configure your LoRaWAN gateway to connect via TLS:
+
+| Setting | Value |
+|---------|-------|
+| Protocol | `wss://` (WebSocket Secure) |
+| Server URI | `wss://yourdomain.com:13008` |
+| CA Certificate | Upload contents of `config/certs/ca.pem` |
+
+### TLS Modes
+
+This setup uses **Server TLS Only** (gateway verifies server certificate).
+
+To enable **Mutual TLS** (both server and gateway verify each other), edit `config/gateway-bridge/chirpstack-gateway-bridge.toml`:
+
+```toml
+[backend.basic_station]
+tls_cert="/etc/chirpstack-gateway-bridge/certs/basicstation.pem"
+tls_key="/etc/chirpstack-gateway-bridge/certs/basicstation-key.pem"
+ca_cert="/etc/chirpstack-gateway-bridge/certs/ca.pem"  # Enables client cert verification
+```
+
+With mTLS, each gateway needs its own certificate signed by the CA.
+
+### Security Notes
+
+- The `config/certs/` directory is excluded from git via `.gitignore`
+- Never commit private keys to version control
+- Certificates are valid for 1 year by default (regenerate before expiry)
+- For production, use certificates from a trusted CA or ensure gateways have your CA certificate
