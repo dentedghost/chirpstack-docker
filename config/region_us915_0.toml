@@ -1,0 +1,19 @@
+# US915 Region configuration
+
+[[regions]]
+name="us915_0"
+common_name="US915"
+
+  [regions.gateway]
+  force_gws_private=false
+
+    [regions.gateway.backend]
+    enabled="mqtt"
+
+      [regions.gateway.backend.mqtt]
+      event_topic="us915_0/gateway/+/event/+"
+      state_topic="us915_0/gateway/+/state/+"
+      command_topic="us915_0/gateway/{{ gateway_id }}/command/{{ command }}"
+      server="tcp://mosquitto:1883/"
+      qos=0
+      clean_session=false

@@ -1,0 +1,27 @@
+# ChirpStack v4 configuration
+
+[logging]
+level="info"
+
+[postgresql]
+dsn="postgres://chirpstack:chirpstack@postgres:5432/chirpstack?sslmode=disable"
+max_open_connections=10
+min_idle_connections=0
+
+[redis]
+servers=["redis://redis:6379/"]
+
+[network]
+net_id="000000"
+enabled_regions=["us915_0"]
+
+[api]
+bind="0.0.0.0:8080"
+secret="you-must-replace-this-secret-with-a-secure-random-string"
+
+[integration]
+enabled=["mqtt"]
+
+  [integration.mqtt]
+  server="tcp://mosquitto:1883/"
+  json=true

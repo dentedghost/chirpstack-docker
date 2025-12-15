@@ -1,0 +1,15 @@
+# ChirpStack Gateway Bridge configuration
+
+[integration.mqtt]
+# MQTT broker address - use Docker service name
+server="tcp://mosquitto:1883"
+
+[integration.mqtt.auth]
+type="generic"
+
+[backend]
+type="semtech_udp"
+
+[backend.semtech_udp]
+# UDP listener for gateway packets
+udp_bind="0.0.0.0:1700"
