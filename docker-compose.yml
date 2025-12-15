@@ -31,7 +31,7 @@ services:
       - "11890:1883"
 
   chirpstack:
-    image: ghcr.io/chirpstack/chirpstack:latest
+    image: chirpstack/chirpstack:4
     restart: unless-stopped
     depends_on:
       postgres:
@@ -50,7 +50,7 @@ services:
       - "18087:8080"
 
   chirpstack-rest-api:
-    image: ghcr.io/chirpstack/chirpstack-rest-api:latest
+    image: chirpstack/chirpstack-rest-api:4
     restart: unless-stopped
     depends_on:
       - chirpstack
@@ -62,7 +62,7 @@ services:
       - "18097:8090"
 
   gateway-bridge:
-    image: ghcr.io/chirpstack/chirpstack-gateway-bridge:latest
+    image: chirpstack/chirpstack-gateway-bridge:4
     restart: unless-stopped
     depends_on:
       - mosquitto
