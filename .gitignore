@@ -5,3 +5,6 @@
 # data folder
 /data
 /lorawan-devices
+
+# TLS certificates (sensitive)
+/config/certs/

@@ -66,19 +66,13 @@ services:
     restart: unless-stopped
     depends_on:
       - mosquitto
-    environment:
-      INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE: "us915_0/gateway/{{ .GatewayID }}/event/{{ .EventType }}"
-      INTEGRATION__MQTT__STATE_TOPIC_TEMPLATE: "us915_0/gateway/{{ .GatewayID }}/state/{{ .StateType }}"
-      INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE: "us915_0/gateway/{{ .GatewayID }}/command/#"
-      INTEGRATION__MQTT__AUTH__TYPE: "generic"
-      INTEGRATION__MQTT__AUTH__GENERIC__SERVERS: "tcp://mosquitto:1883"
-      INTEGRATION__MQTT__AUTH__GENERIC__USERNAME: ""
-      INTEGRATION__MQTT__AUTH__GENERIC__PASSWORD: ""
+    volumes:
+      - ./config/gateway-bridge/chirpstack-gateway-bridge.toml:/etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml:ro
+      - ./config/certs:/etc/chirpstack-gateway-bridge/certs:ro
     ports:
-      - "1700:1700/udp"
+      - "13008:3001"
 
 volumes:
   postgres-data:
   redis-data:
   mosquitto-conf:
-
